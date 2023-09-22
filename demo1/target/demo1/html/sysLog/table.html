@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="refresh" content="60">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="../../js/layui/css/layui.css"  media="all">
+</head>
+<body>
+ 	<form  class="layui-form" id="form1">
+ 	<div class="layui-form-item" style="margin-top: 10px;margin-left: 10px;">
+	    <div class="layui-input-inline">
+	      <input type="text" name="startTime" id="startTime" lay-verify="required" placeholder="开始日期" autocomplete="off" class="layui-input">
+		</div>
+		
+		<div class="layui-input-inline">
+	      	 <input type="text" name="endTime" id="endTime" lay-verify="required" placeholder="结束日期" autocomplete="off" class="layui-input">
+		</div>
+		<div>    
+		  	 <button id="find"  class="layui-btn" type="button" lay-filter="find"><i class="layui-icon">&#xe615;</i></button>
+		</div>
+	</div>
+ </form>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+ 
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm" id="excelDown" lay-event="excelDown"><i class=" layui-icon layui-icon-download-circle">Excel下载</i></button>
+  </div>
+</script>  
+<script src="../../js/layui/layui.js" charset="utf-8"></script>
+<script>
+var order = "";
+layui.use(['table','layer','form','jquery'], function(){
+  var table = layui.table
+  ,layer = layui.layer
+  ,$ = layui.jquery
+  ,form=layui.form;
+  table.render({
+    elem: '#test'
+    ,height: 'full'
+    ,url:'/sysLog/selectList'
+    ,method:'post'
+    ,toolbar: '#toolbarDemo'
+    ,title: '日志数据表'
+     ,cellMinWidth: 80
+    ,cols: [[
+    	 {type: 'checkbox', fixed: 'left'}
+      ,{field:'userid', title:'账户', width:'15%'}
+      ,{field:'module', title:'模块', width:'15%'}
+      ,{field:'method', title:'方法', width:'15%'}
+      ,{field:'responseDate', title:'执行时长',templet: function(d){ return  d.responseDate +'ms' }, width:'10%'}
+      ,{field:'ip', title:'访问IP', width:'15%'}
+      ,{field:'dates', title:'访问时间',templet:"<div>{{layui.util.toDateString(d.dates,'yyyy-MM-dd HH:mm:ss')}}</div>", width:'15%'}
+      ,{field:'commit', title:'执行结果', width:'15%'}
+    ]]
+    ,page: true
+    ,id : 'sysLog'
+  });
+  //搜索
+  $("#find").click(function(){
+       table.reload('sysLog', {
+      	 where:{
+      		startTime:$("#startTime").val(),
+      		endTime:$("#endTime").val()
+      	 }
+       });
+  });
+  //Excel导出
+  $("#excelDown").click(function(){
+			location.href = "/sysLog/selectListExcel?startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val();
+	});
+});
+</script>
+</body>
+</html>

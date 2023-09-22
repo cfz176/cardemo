@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.OrdersMapper">
+
+    <resultMap type="com.cfz.entity.Orders" id="OrdersMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="mid" column="mid" jdbcType="INTEGER"/>
+        <result property="lng" column="lng" jdbcType="VARCHAR"/>
+        <result property="lat" column="lat" jdbcType="VARCHAR"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="updatetime" column="updatetime" jdbcType="TIMESTAMP"/>
+        <result property="endtime" column="endtime" jdbcType="TIMESTAMP"/>
+        <result property="contents" column="contents" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="attached" column="attached" jdbcType="VARCHAR"/>
+        <result property="cost" column="cost" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <resultMap id="CustomerMap" type="orders" extends="OrdersMap">
+        <association property="customer" javaType="customer">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+            <result property="idcard" column="idcard" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="VARCHAR"/>
+            <result property="car" column="car" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+
+    <resultMap type="com.cfz.entity.Orders" id="customerAndOrders" extends="OrdersMap">
+        <association property="customer" javaType="customer">
+            <result property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="phone" column="phone" jdbcType="VARCHAR"/>
+            <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+            <result property="idcard" column="idcard" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="VARCHAR"/>
+            <result property="car" column="car" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="del" column="del" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    
+    <sql id="OrdersColumn">
+       orders.id,
+        orders.phone,
+        orders.mid,
+        orders.lng,
+        orders.lat,
+        orders.createtime,
+        orders.updatetime,
+        orders.endtime,
+        orders.contents,
+        orders.status,
+        orders.address,
+        orders.attached,
+        orders.cost,
+        customer.name,
+        customer.car
+    </sql>
+
+    <select id="findAll" parameterType="orders" resultMap="CustomerMap">
+        SELECT
+        <include refid="OrdersColumn"></include>
+    FROM
+	    orders
+    LEFT JOIN customer ON orders.phone = customer.phone
+    <where>
+        <if test="phone!=null and phone!=''">
+            orders.phone = #{phone}
+        </if>
+        <if test="status!=null and status!=''">
+           and status = #{status}
+        </if>
+    </where>
+    </select>
+
+    <select id="listMyOrders" parameterType="integer" resultMap="customerAndOrders">
+        select * from orders LEFT JOIN customer on orders.phone = customer.phone where orders.mid = #{mid}
+    </select>
+
+    <select id="selectByStatus" parameterType="map" resultType="orders">
+        SELECT
+        *
+        FROM
+        orders
+        <where>
+            <foreach collection="statusList" item="status" open="status in (" close=")" separator=",">
+                #{status}
+            </foreach>
+            and phone = #{phone}
+            and contents = #{contents}
+        </where>
+    </select>
+
+    <insert id="insertOrders" parameterType="orders">
+       INSERT INTO `orders` (
+        `phone`,
+        `mid`,
+        `lng`,
+        `lat`,
+        `createtime`,
+        `updatetime`,
+        `endtime`,
+        `contents`,
+        `status`,
+        `address`,
+        `attached`,
+        `cost`
+        )
+        VALUES
+        (
+            #{phone},
+            #{mid},
+            #{lng},
+            #{lat},
+            #{createtime},
+            #{updatetime},
+            #{endtime},
+            #{contents},
+            #{status},
+            #{address},
+            #{attached},
+            #{cost}
+        )
+	 </insert>
+
+    <update id="update" parameterType="orders">
+        update orders
+        <set>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="address!=null and address!=''">
+                address=#{address},
+            </if>
+            <if test="lng!=null and lng!=''">
+                lng=#{lng},
+            </if>
+            <if test="lat!=null and lat!=''">
+                lat=#{lat},
+            </if>
+            <if test="contents!=null and contents!=''">
+                contents=#{contents},
+            </if>
+            <if test="cost!=null and cost!=''">
+                cost=#{cost},
+            </if>
+            <if test="status!=null and status!=''">
+                status=#{status},
+            </if>
+            <if test="mid!=null and mid!=''">
+                mid=#{mid}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
+

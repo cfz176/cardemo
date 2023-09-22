@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.MasterAddressMapper">
+
+    <insert id="insertMasterAddress" parameterType="masterAddress">
+        INSERT INTO `master_address` (`lng`, `lat`, `mid`, `status`)
+        VALUES (#{lng},#{lat},#{mid},#{status})
+    </insert>
+    <update id="update" parameterType="masterAddress">
+        update master_address
+       <set>
+            <if test="status != null and status != ''">
+                status = #{status}
+            </if>
+        </set>
+        where mid = #{mid}
+    </update>
+
+</mapper>

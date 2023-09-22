@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,u ser-scalable=no">
+		<link rel="stylesheet" type="text/css" href="/css/reset.css"/>
+		<script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
+		<title>我的订单</title>
+		<style type="text/css">
+			.order { position: relative;width: 94%;height: 2.1rem;background: #EFEFEF;margin: 0rem auto 0.2rem;padding-top: 0.2rem;border-radius: 0.1rem; }
+			.order p { font-size: 0.3rem;line-height: 0.5rem;padding-left: 0.2rem;position: relative;z-index: 2; }
+			img { width: 1.8rem;position: absolute;right: 0.2rem;top: 0.2rem; }
+			span { display: inline-block;position: absolute;right: 0.2rem;font-size: 0.28rem;bottom: 0.2rem; }
+		</style>
+	</head>
+	<body>
+		<br/>
+		<div id="order">
+		</div>
+	</body>
+	<script type="text/javascript">
+	var order = "";
+	$.ajax({
+		url:"/masterPhone/getOrders",
+		type : 'get',
+		dataType:'json',
+		success : function(data) {
+			order = "";
+			$.each(data,function(index,item){
+				order =order + "<div onclick=\"getOrder('"+item.id+"')\"  class=\"order\">"+
+									"<p>联系电话："+item.phone+"</p>"+
+									"<p>车牌号: "+item.car+"</p>"+
+									"<p>地址："+item.address+"</p>"+
+									"<p>￥："+item.cost+"元</p>";
+				if(item.status == '5'){
+					order =  order + "<img src=\"/img/icon10.png\" alt=\"\" /></div>" ;
+				}else{
+					order =  order + "<img src=\"/img/icon9.png\" alt=\"\" /></div>" ;
+				}
+		});
+			$("#order").html(order);
+		}
+	});
+	function getOrder(oid){
+		if (confirm("确定要接取订单么?")==true){ 
+			$.ajax({
+				url:"/orders/sendMaster",
+				type : 'post',
+				data:{"id":oid},
+				success : function(data) {
+					if(data==1){
+						alert('接取订单成功！');
+					}else{
+						alert('接取订单失败！');
+					}
+					location.href = 'index';
+				}
+				});
+		}else{ 
+			return false; 
+		}
+	}
+	</script>
+</html>

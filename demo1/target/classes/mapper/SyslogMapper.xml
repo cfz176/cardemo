@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.SyslogMapper">
+
+    <resultMap type="com.cfz.entity.Syslog" id="SyslogMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userid" column="userid" jdbcType="VARCHAR"/>
+        <result property="module" column="module" jdbcType="VARCHAR"/>
+        <result property="method" column="method" jdbcType="VARCHAR"/>
+        <result property="responseDate" column="response_date" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="dates" column="dates" jdbcType="VARCHAR"/>
+        <result property="commit" column="commit" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectSyslog" parameterType="syslog" resultMap="SyslogMap">
+        select * from syslog
+        <where>
+            <if test="startTime != null and startTime!= ''">
+                dates >= #{startTime}
+            </if>
+            <if test="endTime != null and endTime!= ''">
+                and <![CDATA[dates <= #{endTime}]]>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectListExcel" resultType="java.util.Map">
+        select * from syslog
+        <where>
+            <if test="startTime != null and startTime !='' ">
+                and dates >= #{startTime}
+            </if>
+            <if test="endTime != null and endTime !='' ">
+                <![CDATA[and dates <= #{endTime}]]>
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveLog" parameterType="syslog">
+        INSERT INTO `syslog` (`userid`, `module`, `method`, `response_date`, `ip`, `dates`, `commit`)
+        VALUES (#{userid},#{module},#{method},#{responseDate},#{ip},#{dates},#{commit})
+    </insert>
+
+</mapper>
+

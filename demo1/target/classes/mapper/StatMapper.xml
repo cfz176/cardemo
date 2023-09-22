@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.StatMapper">
+
+    <select id="loadCustomerAreaStatJson" resultType="busCustomer">
+        select count(identity) as value,address as name from bus_customer group by address
+    </select>
+
+    <select id="loadCompanyYearGradeStatJson" parameterType="string" resultType="busRent">
+      SELECT DATE_FORMAT(createtime, '%m') AS month,sum(price) as price from bus_rent
+       where DATE_FORMAT(createtime,'%Y') = #{month} GROUP BY month;
+    </select>
+
+    <select id="loadOpernameYearGradeStatJson" parameterType="string" resultType="busCustomer">
+      SELECT opername as name,sum(price) as value from bus_rent where DATE_FORMAT(createtime,'%Y')= #{year} GROUP BY opername
+    </select>
+
+</mapper>
+

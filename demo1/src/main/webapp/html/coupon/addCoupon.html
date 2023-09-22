@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/js/layui/css/layui.css">
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak=gXLkbXzN7kOR22S6iszA2Zfe6yIkK0s4"></script>
+</head>
+<body>
+	<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+		  <legend>新增优惠券信息</legend>
+	</fieldset>
+	<form class="layui-form"  id="form1">
+	 	<div class="layui-form-item">
+		   	<label class="layui-form-label">名 称</label>
+			<div class="layui-input-inline">
+			     	<input type="text" id="name" name="name" required lay-verify="required" placeholder="优惠卷名称" autocomplete="off" class="layui-input">
+			</div>
+	   </div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">开始时间</label>
+			<div class="layui-input-inline">
+			     	<input type="date" name="begin"  id="begin" required lay-verify="required" placeholder="开始时间" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">结束时间</label>
+			<div class="layui-input-inline">
+			  <input type="date" name="end" id="end" lay-verify="date" placeholder="开始时间" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">打折</label>
+			<div class="layui-input-inline">
+			     <select name="discount">
+			     	<option valu=“10”>一折</option>
+			     	<option valu=“20”>二折</option>
+			     	<option valu=“30”>三折</option>
+			        <option valu=“40”>四折</option>
+			     	<option valu=“50”>五折</option>
+			     </select>	
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">备注</label>
+			<div class="layui-input-inline">
+			      <textarea id="remark" name="remark" cols="30" rows="4"></textarea>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+			   <button class="layui-btn" type="button" id="add" lay-filter="formDemo">提交</button>	     
+			</div>
+		</div>
+	<input name="id" id="cid" type="hidden"/>
+	</form>
+</body>
+<script type="text/javascript" src="/js/layui/layui.js"></script>
+<script>
+ 	layui.use(['form','layer','jquery'], function(){
+		var form = layui.form, 
+		$ = layui.jquery, 
+		layer = layui.layer;
+		$(document).on('click','#add',function(){
+			$.ajax({
+				url : '/coupon/add',// 跳转到 action  
+				type : 'post',
+				data :$("#form1").serialize(),
+				success : function(data) {
+					alert(data)
+					if(data=='1'){
+						layer.alert("新增成功！");
+						var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+			            parent.layer.close(index); 
+			            window.parent.location.reload();
+					}
+				},
+				error : function(error) {
+					// view("异常！");  
+				}
+			});
+		});
+ 	});
+</script>
+</html>

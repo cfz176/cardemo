@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script type="text/javascript" src="/js/jquery-3.2.1.js"></script>
+	</head>
+	<body></body>
+	<script type="text/javascript">
+	function async(){
+		$.ajax({
+			async:true,
+			url:"/masterPhone/myorder",
+			type : 'get',
+			dataType:'text',
+			success : function(data) {
+				if(data=='unfinished'){
+					alert('你有未完成订单！');
+					 setTimeout(function(){self.async();},10000);//等待10S继续执行
+				}else if(data=='newOrder'){
+					alert('有新的可以接取订单！');
+					setTimeout(function(){self.async();},10000);//等待10S继续执行
+				}else{
+					self.async();//没有 订单 刷新 然后等待
+				}
+			}
+		});
+	}
+	async();
+	</script>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../js/layui/css/layui.css">
+</head>
+<body>
+		<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+		  <legend>修改工程师信息</legend>
+		</fieldset>
+	<form class="layui-form"  id="form1">
+		<div class="layui-form-item">
+			   	<label class="layui-form-label">姓&nbsp;&nbsp;&nbsp;名</label>
+				<div class="layui-input-inline">
+				   <input type="name" name="name" id="name" required lay-verify="required" placeholder="姓名" autocomplete="off" class="layui-input">
+				</div>
+		</div>
+		<div class="layui-form-item">
+			   	<label class="layui-form-label">手&nbsp;机&nbsp;号</label>
+				<div class="layui-input-inline">
+				   <input type="phone" name="phone" id="phone" required lay-verify="required" placeholder="手机号" autocomplete="off" class="layui-input">
+				</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-form-item">
+		   		<label class="layui-form-label">性&nbsp;&nbsp;&nbsp;别</label>
+				<div class="layui-input-inline">
+				      <select name="sex" id="sex">
+				      	<option value="男">男</option>
+				      	<option value="女">女</option>
+				      </select>
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">年&nbsp;&nbsp;&nbsp;龄</label>
+			<div class="layui-input-inline">
+			     <input type="age" name="age" id="age" required lay-verify="required" placeholder="年龄" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">账&nbsp;&nbsp;&nbsp;号</label>
+			<div class="layui-input-inline">
+			    <input type="account" name="account" id="account" required lay-verify="required" placeholder="账号" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+		   	<label class="layui-form-label">密&nbsp;&nbsp;&nbsp;码</label>
+			<div class="layui-input-inline">
+			    <input type="password" name="password" id="password" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+			   <button class="layui-btn" type="button" id="subbtn" lay-filter="formDemo">提交</button>	     
+			</div>
+		</div>
+	</div>
+	 <input type="hidden" name="id" id="id" >
+	</form>
+</body>
+<script type="text/javascript" src="../../js/layui/layui.js"></script>
+<script>
+	var master=window.parent.master[0]; 
+	//alert(master.id)
+ 	layui.use(['form','layer','jquery'], function(){
+		var form = layui.form, 
+		$ = layui.jquery, 
+		layer = layui.layer;
+		$.each(master, function(index, value) {
+			if(index == 'sex'){
+				$("#sex option[value='"+value+"']").attr("selected",true);
+				form.render();//LayUI ，重新渲染页面 不渲染页面 下拉框值更新但是显示内容不更新。
+			}else{
+				$("input[name='"+index+"']").val(value);		
+			}
+		});
+		$(document).on('click','#subbtn',function(){
+			$.ajax({
+				url : '/master/update',// 跳转到 action  
+				type : 'post',
+				data :$("#form1").serialize(),
+				success : function(data) {
+					if(data=='1'){
+						layer.msg("修改成功！");
+					}
+					var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+		            parent.layer.close(index); 
+		            window.parent.location.reload();
+				},
+				error : function(error) {
+					// view("异常！");  
+				}
+			});
+		});
+ 	});
+</script>
+</html>

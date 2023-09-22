@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/js/layui/css/layui.css"  media="all">
+</head>
+<body>
+ <form  class="layui-form" id="form1">
+ 	<div class="layui-form-item" style="margin-top: 10px;margin-left: 10px;">
+	    <div class="layui-input-inline">
+	      <input type="text" name="name" id="name" lay-verify="required" placeholder="根据优惠券名查找" autocomplete="off" class="layui-input">
+		</div>
+        <div class="layui-input-inline">
+            <input type="text" name="begin" id="begin" lay-verify="required" placeholder="根据起始时间查找" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <input type="text" name="end" id="end" lay-verify="required" placeholder="根据结束时间查找" autocomplete="off" class="layui-input">
+        </div>
+		<div>    
+		  	 <button id="find"  class="layui-btn" type="button" lay-filter="find"><i class="layui-icon">&#xe615;</i></button>
+		</div>
+	</div>
+ </form>
+<table class="layui-hide" id="test" lay-filter="test"></table>
+ <!-- 顶部工具 -->
+<script type="text/html" id="topbarDemo">
+  <div class="layui-btn-container">
+	<button class="layui-btn layui-btn-sm" lay-event="add">新增</button>
+	<button class="layui-btn layui-btn-sm" lay-event="send">发放</button>
+  </div>
+</script>
+ <!-- 右边工具 -->
+<script type="text/html" id="rightBar">
+  <a class="layui-btn layui-btn-xs" lay-event="upd">修改</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="/js/layui/layui.js" charset="utf-8"></script>
+<script>
+var coupon = "";
+layui.use(['table','layer','form','jquery'], function(){
+  var table = layui.table
+  ,layer = layui.layer
+  ,$ = layui.jquery
+  ,form=layui.form;
+  table.render({
+    elem: '#test'
+    ,height: 'full'
+    ,url:'/coupon/selectList'
+    ,method:'post'
+    ,toolbar: '#topbarDemo'
+    ,title: '优惠券数据表'
+    ,cellMinWidth: 80
+    ,cols: [[
+      {type: 'checkbox', fixed: 'left'}
+      ,{field:'id', title:'ID'}
+      ,{field:'name', title:'优惠券名称', edit: 'text'}
+      ,{field:'begin', title:'开始时间',templet: "<div>{{layui.util.toDateString(d.begin,'yyyy-MM-dd')}}</div>"}
+      ,{field:'end', title:'结束时间',templet: "<div>{{layui.util.toDateString(d.end,'yyyy-MM-dd')}}</div>"}
+      ,{field:'discount', title:'折扣'}
+      ,{field:'remark', title:'备注'}
+      ,{field:'right', title:'操作', toolbar: '#rightBar'}
+    ]]
+    ,page: true
+    ,id: 'customer'
+  });
+	//搜索
+  $("#find").click(function(){
+       table.reload('customer', {
+      	 where:{
+      		name:$("#name").val(),
+      	 }
+       });
+  });
+  //顶部工具栏事件  “toolbar”  监听
+  table.on('toolbar(test)', function(obj){
+    var checkStatus = table.checkStatus(obj.config.id);
+    switch(obj.event){
+      case 'add':
+     	   layer.open({
+   	         type: 2,
+   	         skin: 'layui-layer-demo', //样式类名
+   	         title: '新增优惠券信息',
+   	         closeBtn: 1, //不显示关闭按钮
+   	         anim: 2,
+   	         maxmin: true,
+   	         area: ['32%', '82%'],
+   	         shadeClose: true, //开启遮罩关闭
+   	         content: '/coupon/goAdd'
+   	     });
+       break;
+      case 'send':
+    	  coupon= checkStatus.data[0];
+    	   layer.open({
+  	         type: 2,
+  	         skin: 'layui-layer-demo', //样式类名
+  	         title: '发放优惠券',
+  	         closeBtn: 1, //不显示关闭按钮
+  	         anim: 2,
+  	         maxmin: true,
+  	         area: ['100%', '100%'],
+  	         shadeClose: true, //开启遮罩关闭
+  	         content: '/coupon/send'
+  	     });
+      break;
+    };
+  });
+
+  //侧边工具栏事件  ”tool”  监听
+  table.on('tool(test)', function(obj){
+	  coupon = obj.data;
+	    switch(obj.event){
+	      case 'upd':
+	     	   layer.open({
+	   	         type: 2,
+	   	         skin: 'layui-layer-demo', //样式类名
+	   	         title: '修改优惠券信息',
+	   	         closeBtn: 1, //不显示关闭按钮
+	   	         anim: 2,
+	   	         maxmin: true,
+	   	         area: ['33%', '82%'],
+	   	         shadeClose: true, //开启遮罩关闭
+	   	         content: '/coupon/goUpdate'
+	   	     });
+	       break;
+	      case 'del':
+	     	   layer.confirm("是否删除 优惠券："+obj.data.name+ " !",  {icon: 5, title:'提示'} , function(){
+	     			$.ajax({
+	    				url : '/coupon/update',// 跳转到 action
+	    				type : 'post',
+	    				data :{"id":+obj.data.id , "del":"1"},
+	    				success : function(data) {
+	    					if(data=='1'){
+	    						layer.alert("删除成功！");
+	    					}
+	    				},
+	    				error : function(error) {
+	    					 view("异常！");  
+	    				}
+	    			});
+	     		    window.location.reload();
+	     	   });
+	       break;
+	    };
+  });
+  
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.CustomerMapper">
+
+    <resultMap type="com.cfz.entity.Customer" id="CustomerMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="createtime" column="createtime" jdbcType="TIMESTAMP"/>
+        <result property="idcard" column="idcard" jdbcType="VARCHAR"/>
+        <result property="score" column="score" jdbcType="VARCHAR"/>
+        <result property="car" column="car" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="del" column="del" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <update id="update" parameterType="customer">
+        update customer
+        <set>
+            <if test="phone!=null and phone!=''">
+                phone=#{phone},
+            </if>
+            <if test="name!=null and name!=''">
+                name=#{name},
+            </if>
+            <if test="idcard!=null and idcard!=''">
+                idcard=#{idcard},
+            </if>
+            <if test="car!=null and car!=''">
+                car=#{car},
+            </if>
+            <if test="sex!=null and sex!=''">
+                sex=#{sex}
+            </if>
+            <if test="del!=null and del!=''">
+                del=#{del}
+            </if>
+            <where>
+                id=#{id}
+            </where>
+        </set>
+    </update>
+
+    <!--查询所有-->
+    <select id="selectList" parameterType="customer" resultMap="CustomerMap">
+        select * from customer
+        <where>
+            <if test="phone!=null and phone!=''">
+                and phone = #{phone}
+            </if>
+            <if test="name!=null and name!=''">
+                and name like concat('%',#{name},'%')
+            </if>
+            and del = #{del}
+        </where>
+    </select>
+
+    <!--新增用户-->
+    <insert id="add" parameterType="customer">
+        INSERT INTO customer (name, phone, createtime, idcard, score, car, sex)
+         VALUES (#{name},#{phone},now(),#{idcard},0,#{car},#{sex})
+    </insert>
+
+
+</mapper>
+

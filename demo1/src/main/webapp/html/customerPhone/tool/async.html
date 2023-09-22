@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script type="text/javascript" src="../../../js/jquery-3.2.1.js"></script>
+	</head>
+	<body></body>
+	<script type="text/javascript">
+	function async(){
+		$.ajax({
+			async:true,
+			url:"/customerPhone/getOrder",
+			type : 'get',
+			dataType:'text',
+			success : function(data) {
+				if(data != 'null'){
+					if(confirm("是否确认完成订单！")){
+						checkOrder(data);
+					}
+				}
+				setTimeout(function(){self.async();},5000);//等待10S继续执行
+			}
+		});
+	}
+	async();
+	
+	function checkOrder(data){
+			$.ajax({
+				async:true,
+				url:"/order/upd",
+				type : 'post',
+				data:JSON.parse(data),
+				success : function(data) {
+					if(data=='1'){
+						alert("已完成，您的订单！感谢本次使用！");
+					}
+				}
+			});
+	}
+	</script>
+</html>

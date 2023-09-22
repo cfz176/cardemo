@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cfz.mapper.CouponMapper">
+
+    <resultMap type="com.cfz.entity.Coupon" id="CouponMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="begin" column="begin" jdbcType="TIMESTAMP"/>
+        <result property="end" column="end" jdbcType="TIMESTAMP"/>
+        <result property="discount" column="discount" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="del" column="del" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="coupon">
+        INSERT INTO `coupon` (`name`, `begin`, `end`, `discount`, `remark`, `del`)
+         VALUES (#{name}, #{begin},  #{end},  #{discount},  #{remark},  #{del} )
+    </insert>
+
+    <select id="selectById" parameterType="integer" resultType="coupon">
+        select * from coupon where id = #{id}
+    </select>
+
+    <update id="update" parameterType="coupon">
+        update coupon
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="begin != null">
+                begin = #{begin},
+            </if>
+            <if test="end != null">
+                end = #{end},
+            </if>
+            <if test="discount != null and discount != ''">
+                discount = #{discount},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="del != null and del != ''">
+                del = #{del}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectList" resultType="com.cfz.entity.Coupon">
+        select * from coupon
+        <where>
+            <if test="name != null and name !=''">
+                name like concat('%',#{name},'%')
+            </if>
+            <if test="del != null and del !=''">
+                and del = #{del}
+            </if>
+            <if test="begin != null and begin !=''">
+                and begin = #{begin}
+            </if>
+            <if test="end != null and end !=''">
+                and end = #{end}
+            </if>
+            <if test="id != null and id !=''">
+                and id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectListByPhone" parameterType="string" resultType="com.cfz.entity.Coupon">
+    select * from customer
+     LEFT JOIN customer_coupon ON customer.id = customer_coupon.customer_id
+    LEFT JOIN coupon ON customer_coupon.coupon_id = coupon_id where customer.phone = #{phone}
+    </select>
+
+</mapper>
+
